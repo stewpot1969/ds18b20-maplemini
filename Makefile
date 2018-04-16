@@ -98,7 +98,7 @@ EXAMPLES_SCRIPT_DIR	= $(OPENCM3_DIR)/../scripts
 ###############################################################################
 # C flags
 
-TGT_CFLAGS	+= $(OPT) $(CSTD) $(DEBUG)
+TGT_CFLAGS	+= $(OPT) $(CSTD) $(DEBUG) -save-temps
 TGT_CFLAGS	+= $(ARCH_FLAGS)
 TGT_CFLAGS	+= -Wextra -Wshadow -Wimplicit-function-declaration
 TGT_CFLAGS	+= -Wredundant-decls -Wmissing-prototypes -Wstrict-prototypes
