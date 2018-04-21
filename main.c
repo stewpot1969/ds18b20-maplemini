@@ -21,9 +21,7 @@ static char buf[BUFLEN+1];
 
 static void io_setup(void)
 {
-
-  /* configure port B */
-	rcc_periph_clock_enable(RCC_GPIOB);
+  rcc_periph_clock_enable(RCC_GPIOB);
 	rcc_periph_clock_enable(RCC_AFIO);
   
 	/* PB1 (LED) push/pull */
@@ -31,11 +29,6 @@ static void io_setup(void)
 	  GPIO_MODE_OUTPUT_2_MHZ,
 	  GPIO_CNF_OUTPUT_PUSHPULL,
 	  GPIO1);
-
-	gpio_set_mode(GPIOB,
-	  GPIO_MODE_OUTPUT_2_MHZ,
-	  GPIO_CNF_OUTPUT_PUSHPULL,
-	  GPIO14);
 	
 	/* PB8 (button) input */
 	gpio_set_mode(GPIOB,
@@ -74,62 +67,20 @@ int main(void)
 
   io_setup();
   uart_setup();
-  timer_init();
+  ds_init();
   
   printf("*** Try typing stuff in. ***\n");
   
   while(1)
   {
-  
-  printf("Please enter something :");
-  fflush(stdout);
-  fgets(local_buf, 32, stdin);
-  printf("You typed in [%s]\n",local_buf);
-  
-  gpio_clear(GPIOB,GPIO14);
-  timer_delay(10);
-  
-  
-  TIM_CNT(TIM3) = 2;
-  TIM_CR1(TIM3) |= TIM_CR1_CEN;
-  GPIOB_BSRR=0x00004000;    //GPIOB14 high
-  while ( TIM_CR1(TIM3) & TIM_CR1_CEN );
-  GPIOB_BSRR=0x40000000;    //GPIOB14 high
-  timer_delay(10);
-
-  TIM_CNT(TIM3) = 5;
-  TIM_CR1(TIM3) |= TIM_CR1_CEN;
-  GPIOB_BSRR=0x00004000;    //GPIOB14 high
-  while ( TIM_CR1(TIM3) & TIM_CR1_CEN );
-  GPIOB_BSRR=0x40000000;    //GPIOB14 high
-  timer_delay(10);
-
-  TIM_CNT(TIM3) = 10;
-  TIM_CR1(TIM3) |= TIM_CR1_CEN;
-  GPIOB_BSRR=0x00004000;    //GPIOB14 high
-  while ( TIM_CR1(TIM3) & TIM_CR1_CEN );
-  GPIOB_BSRR=0x40000000;    //GPIOB14 high
-  timer_delay(10);
-
-  TIM_CNT(TIM3) = 20;
-  TIM_CR1(TIM3) |= TIM_CR1_CEN;
-  GPIOB_BSRR=0x00004000;    //GPIOB14 high
-  while ( TIM_CR1(TIM3) & TIM_CR1_CEN );
-  GPIOB_BSRR=0x40000000;    //GPIOB14 high
-  timer_delay(10);
-
-  TIM_CNT(TIM3) = 50;
-  TIM_CR1(TIM3) |= TIM_CR1_CEN;
-  GPIOB_BSRR=0x00004000;    //GPIOB14 high
-  while ( TIM_CR1(TIM3) & TIM_CR1_CEN );
-  GPIOB_BSRR=0x40000000;    //GPIOB14 high
-  timer_delay(10);
-
-  TIM_CNT(TIM3) = 100;
-  TIM_CR1(TIM3) |= TIM_CR1_CEN;
-  GPIOB_BSRR=0x00004000;    //GPIOB14 high
-  while ( TIM_CR1(TIM3) & TIM_CR1_CEN );
-  GPIOB_BSRR=0x40000000;    //GPIOB14 high
+    int i=0;
+    fgets(local_buf, 32, stdin);
+    ds_reset();
+    ds_writebyte(0x33);
+    for ( i=0 ; i<8 ; i++ ) {
+      printf("%02X",ds_readbyte());
+    }
+    printf("\n");
   }
 }
 
