@@ -73,14 +73,8 @@ int main(void)
   
   while(1)
   {
-    int i=0;
     fgets(local_buf, 32, stdin);
-    ds_reset();
-    ds_writebyte(0x33);
-    for ( i=0 ; i<8 ; i++ ) {
-      printf("%02X",ds_readbyte());
-    }
-    printf("\n");
+    ds_read_temp();
   }
 }
 

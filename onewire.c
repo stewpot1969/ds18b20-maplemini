@@ -2,13 +2,18 @@
 #define ONEWIRE_C
 
 
+uint8_t ds_scratchpad[8];
+
 void ds_init(void);
 void ds_reset(void);
 void ds_delay(int us);
 void ds_writebit(int bit);
 int ds_readbit(void);
-int ds_readbyte(void);
+uint8_t ds_readbyte(void);
 void ds_writebyte(int x);
+void ds_read_scratchpad(void);
+void ds_write_scratchpad(void);
+void ds_read_temp(void);
 
 /* Set these three to define which timer is used.
   Valid values are TIM2-TIM5 */
@@ -121,8 +126,8 @@ int ds_readbit(void) {
   return bit;
 }
 
-int ds_readbyte(void) {
-  int ret=0;
+uint8_t ds_readbyte(void) {
+  uint8_t ret=0;
   int i;
   for ( i=0 ; i<8 ; i++ ) {
     if (ds_readbit()) {
@@ -138,5 +143,126 @@ void ds_writebyte(int x) {
     ds_writebit(x & ( 1 << i ) );
   }
 }
+
+void ds_read_scratchpad(void) {
+
+  int i;    // iterator for eight scratchpad bytes
+  ds_reset();
+  
+  /* Skip ROM command */
+  ds_writebyte(0xCC);
+  
+  /* read scratchpad command */
+  ds_writebyte(0xBE);   // read scratchpad command
+
+  printf("Reading scratchpad: ");
+  
+  /* read scratchpad data */
+  for ( i=0 ; i<8 ; i++ ) {
+    ds_scratchpad[i]=ds_readbyte();
+    printf("%02X",ds_scratchpad[i]);
+  }
+  printf("\n");
+}
+
+void ds_write_scratchpad(void) {
+
+  int i;    //iterator for eight scratchpad bytes
+  ds_reset();
+  
+  /* write scratchpad command */
+  ds_writebyte(0x4E);
+  
+  /* write scratchpad data */
+  for ( i=0 ; i<=8 ; i++ ) {
+    ds_writebyte(ds_scratchpad[i]);
+  }
+}
+
+void ds_read_temp(void) {
+
+  int i;    // iterator for eight scratchpad bytes
+  ds_reset();
+  
+  /* Skip ROM command */
+  ds_writebyte(0xCC);
+  
+  /* convert temp command */
+  ds_writebyte(0x44);   // convert temp command
+
+  for (i=0 ; i<100 ; i++) {
+    ds_delay(10000);
+  }
+
+  ds_reset();
+  /* Skip ROM command */
+  ds_writebyte(0xCC);
+  /* read scratchpad command */
+  ds_writebyte(0xBE);   // read scratchpad command
+  
+  printf("Reading temp: ");
+  
+  /* read scratchpad data */
+  for ( i=0 ; i<=8 ; i++ ) {
+    ds_scratchpad[i]=ds_readbyte();
+    printf("%02X",ds_scratchpad[i]);
+  }
+  printf("\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif
