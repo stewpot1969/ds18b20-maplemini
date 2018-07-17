@@ -13,7 +13,7 @@ uint8_t ds_readbyte(void);
 void ds_writebyte(int x);
 void ds_read_scratchpad(void);
 void ds_write_scratchpad(void);
-void ds_read_temp(void);
+float ds_read_temp(void);
 
 /* Set these three to define which timer is used.
   Valid values are TIM2-TIM5 */
@@ -179,9 +179,12 @@ void ds_write_scratchpad(void) {
   }
 }
 
-void ds_read_temp(void) {
+float ds_read_temp(void) {
 
-  int i;    // iterator for eight scratchpad bytes
+  int16_t tmp;    // temperature in 16 bit format
+  float ret;  // temp in float format
+  int i;
+  
   ds_reset();
   
   /* Skip ROM command */
@@ -200,14 +203,14 @@ void ds_read_temp(void) {
   /* read scratchpad command */
   ds_writebyte(0xBE);   // read scratchpad command
   
-  printf("Reading temp: ");
+  //printf("Reading temp: ");
   
-  /* read scratchpad data */
-  for ( i=0 ; i<=8 ; i++ ) {
-    ds_scratchpad[i]=ds_readbyte();
-    printf("%02X",ds_scratchpad[i]);
-  }
-  printf("\n");
+  tmp=ds_readbyte();
+  tmp+=(ds_readbyte()*256);
+
+  printf("tmp=%i\n",tmp);
+  ret=tmp*0.0625;
+  return ret;  
 }
 
 

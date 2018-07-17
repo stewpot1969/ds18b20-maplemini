@@ -74,7 +74,7 @@ int main(void)
   while(1)
   {
     fgets(local_buf, 32, stdin);
-    ds_read_temp();
+    printf("The temperature is %8.5f deg C.\n",ds_read_temp());
   }
 }
 
